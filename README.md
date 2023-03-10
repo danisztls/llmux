@@ -24,7 +24,11 @@ Clone the repository:
 
 Install the dependencies:
 
-`pip install -r requirements.txt`
+`pip install .`
+
+or with Poetry:
+
+`poetry install`
 
 After that, you need to configure your API Key. There are three alternative ways to provide this parameter:
 
@@ -44,7 +48,7 @@ Check [this page](https://platform.openai.com/docs/models) for the technical det
 
 Launch the *chatgpt.py* script (depending on your environment you may need to use the `python3` command instead of `python`):
 
-`python chatgpt.py`
+`python chatgpt-cli`
 
 Then just chat! The number next to the prompt is the [tokens](https://platform.openai.com/tokenizer) used in the conversation at that point.
 
