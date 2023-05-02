@@ -42,7 +42,7 @@ def load_config() -> dict:
     """
 
     config = {
-        "api-key": "sk-12345",
+        "api-key": "",
         "model": "gpt-3.5-turbo",
         "temperature": 1
     }
