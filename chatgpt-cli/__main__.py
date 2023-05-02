@@ -36,12 +36,38 @@ completion_tokens = 0
 console = Console()
 
 
-def load_config(config_file: str) -> dict:
+def load_config() -> dict:
     """
-    Read a YAML config file and returns it's content as a dictionary
+    Read configuration file and env vars in this order of precedence and returns config as a dictionary
     """
-    with open(config_file) as file:
-        config = yaml.load(file, Loader=yaml.FullLoader)
+
+    config = {
+        "api-key": "",
+        "model": "gpt-3.5-turbo",
+        "temperature": 1
+        # "max_tokens": 500,
+        # "markdown": true
+    }
+
+    # TODO: Preferentially read local config
+
+    if os.getenv("XDG_CONFIG_HOME"):
+        config_dir = os.getenv("XDG_CONFIG_HOME") + "/chatgpt-cli"
+    elif os.getenv("HOME"):
+        config_dir = os.getenv("HOME") + "/.config/chagpt-cli"
+
+    config_file = config_dir + "/config.yml"
+
+    if os.path.isfile(config_file):
+        with open(config_file) as file:
+            config = yaml.load(file, Loader=yaml.FullLoader)
+
+    if not config["api-key"].startswith("sk"):
+        config["api-key"] = os.getenv("OAI_SECRET_KEY", "fail")
+    while not config["api-key"].startswith("sk"):
+        config["api-key"] = input(
+            "Enter your OpenAI Secret Key (should start with 'sk-')\n"
+        )
 
     return config
 
