@@ -14,7 +14,7 @@ from rich.console import Console
 from rich.markdown import Markdown
 
 WORKDIR = Path(__file__).parent
-CONFIG_FILE = Path(WORKDIR, "config.yaml")
+# TODO: Move history file to $XDG_DATA_HOME
 HISTORY_FILE = Path(WORKDIR, ".history")
 BASE_ENDPOINT = "https://api.openai.com/v1"
 ENV_VAR = "OPENAI_API_KEY"
@@ -42,11 +42,9 @@ def load_config() -> dict:
     """
 
     config = {
-        "api-key": "",
+        "api-key": "sk-12345",
         "model": "gpt-3.5-turbo",
         "temperature": 1
-        # "max_tokens": 500,
-        # "markdown": true
     }
 
     # TODO: Preferentially read local config
@@ -60,7 +58,8 @@ def load_config() -> dict:
 
     if os.path.isfile(config_file):
         with open(config_file) as file:
-            config = yaml.load(file, Loader=yaml.FullLoader)
+            config_from_file = yaml.load(file, Loader=yaml.FullLoader)
+            config = {**config, **config_from_file}
 
     if not config["api-key"].startswith("sk"):
         config["api-key"] = os.getenv("OAI_SECRET_KEY", "fail")
@@ -204,26 +203,11 @@ def start_prompt(session: PromptSession, config: dict) -> None:
     "-c", "--context", "context", type=click.File("r"), help="Path to a context file",
     multiple=True
 )
-@click.option("-k", "--key", "api_key", help="Set the API Key")
-def main(context, api_key) -> None:
+def main(context) -> None:
     history = FileHistory(HISTORY_FILE)
     session = PromptSession(history=history)
 
-    try:
-        config = load_config(CONFIG_FILE)
-    except FileNotFoundError:
-        console.print("Configuration file not found", style="red bold")
-        sys.exit(1)
-
-    # Order of precedence for API Key configuration:
-    # Command line option > Environment variable > Configuration file
-
-    # If the environment variable is set overwrite the configuration
-    if os.environ.get(ENV_VAR):
-        config["api-key"] = os.environ[ENV_VAR].strip()
-    # If the --key command line argument is used overwrite the configuration
-    if api_key:
-        config["api-key"] = api_key.strip()
+    config = load_config()
 
     # Run the display expense function when exiting the script
     atexit.register(display_expense, model=config["model"])
