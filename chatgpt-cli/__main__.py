@@ -2,10 +2,12 @@
 
 import atexit
 import click
+import datetime
 import os
 import requests
 import sys
 import yaml
+import json
 
 from pathlib import Path
 from prompt_toolkit import PromptSession, HTML
@@ -18,11 +20,19 @@ WORKDIR = Path(__file__).parent
 HISTORY_FILE = Path(WORKDIR, ".history")
 BASE_ENDPOINT = "https://api.openai.com/v1"
 ENV_VAR = "OPENAI_API_KEY"
+SAVE_FOLDER = "session-history"
+SAVE_FILE = (
+    "chatgpt-session-" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S") + ".json"
+)
 
 PRICING_RATE = {
-    "gpt-3.5-turbo": {"prompt": 0.002, "completion": 0.002},
+    "gpt-3.5-turbo": {"prompt": 0.0015, "completion": 0.002},
+    "gpt-3.5-turbo-0613": {"prompt": 0.0015, "completion": 0.002},
+    "gpt-3.5-turbo-16k": {"prompt": 0.003, "completion": 0.004},
     "gpt-4": {"prompt": 0.03, "completion": 0.06},
+    "gpt-4-0613": {"prompt": 0.03, "completion": 0.06},
     "gpt-4-32k": {"prompt": 0.06, "completion": 0.12},
+    "gpt-4-32k-0613": {"prompt": 0.06, "completion": 0.12},
 }
 
 
@@ -61,21 +71,22 @@ def load_config() -> dict:
             config_from_file = yaml.load(file, Loader=yaml.FullLoader)
             config = {**config, **config_from_file}
 
-    if not config["api-key"].startswith("sk"):
-        config["api-key"] = os.getenv("OAI_SECRET_KEY", "fail")
-    while not config["api-key"].startswith("sk"):
-        config["api-key"] = input(
-            "Enter your OpenAI Secret Key (should start with 'sk-')\n"
-        )
-
     return config
+
+
+def create_save_folder() -> None:
+    """
+    Create the session history folder if not exists
+    """
+    if not os.path.exists(SAVE_FOLDER):
+        os.mkdir(SAVE_FOLDER)
 
 
 def add_markdown_system_message() -> None:
     """
-    Try to force ChatGPT to always respond with well formatted code blocks if markdown is enabled.
+    Try to force ChatGPT to always respond with well formatted code blocks and tables if markdown is enabled.
     """
-    instruction = "Always use code blocks with the appropriate language tags"
+    instruction = "Always use code blocks with the appropriate language tags. If asked for a table always format it using Markdown syntax."
     messages.append({"role": "system", "content": instruction})
 
 
@@ -170,6 +181,8 @@ def start_prompt(session: PromptSession, config: dict) -> None:
 
         # Update message history and token counters
         messages.append(message_response)
+        with open(os.path.join(SAVE_FOLDER, SAVE_FILE), "w") as f:
+            json.dump({"model": config["model"], "messages": messages}, f, indent=4)
         prompt_tokens += usage_response["prompt_tokens"]
         completion_tokens += usage_response["completion_tokens"]
 
@@ -200,14 +213,41 @@ def start_prompt(session: PromptSession, config: dict) -> None:
 
 @click.command()
 @click.option(
-    "-c", "--context", "context", type=click.File("r"), help="Path to a context file",
-    multiple=True
+    "-c",
+    "--context",
+    "context",
+    type=click.File("r"),
+    help="Path to a context file",
+    multiple=True,
 )
-def main(context) -> None:
+@click.option("-k", "--key", "api_key", help="Set the API Key")
+@click.option("-m", "--model", "model", help="Set the model")
+@click.option(
+    "-ml", "--multiline", "multiline", is_flag=True, help="Use the multiline input mode"
+)
+def main(context, api_key, model, multiline) -> None:
     history = FileHistory(HISTORY_FILE)
-    session = PromptSession(history=history)
+    if multiline:
+        session = PromptSession(history=history, multiline=True)
+    else:
+        session = PromptSession(history=history)
 
     config = load_config()
+
+    create_save_folder()
+
+    # Order of precedence for API Key configuration:
+    # Command line option > Environment variable > Configuration file
+
+    # If the environment variable is set overwrite the configuration
+    if os.environ.get(ENV_VAR):
+        config["api-key"] = os.environ[ENV_VAR].strip()
+    # If the --key command line argument is used overwrite the configuration
+    if api_key:
+        config["api-key"] = api_key.strip()
+    # If the --model command line argument is used overwrite the configuration
+    if model:
+        config["model"] = model.strip()
 
     # Run the display expense function when exiting the script
     atexit.register(display_expense, model=config["model"])

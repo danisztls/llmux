@@ -40,7 +40,19 @@ If more then one API Key is provided, ChatGPT CLI follows this priority order: *
 
 ## Models
 
-ChatGPT CLI, by default, uses the original `gpt-3.5-turbo` model. On March 14, 2023 OpenAI released the new `gpt-4` and `gpt-4-32k` models, only available to a limited amount of users for now. In order to use them, edit the `model` parameter in the *config.yaml* file. 
+ChatGPT CLI, by default, uses the original `gpt-3.5-turbo` model. In order to use other ChatGPT models, edit the `model` parameter in the *config.yaml* file ore use the `--model` command line option. Here is a list of all the available options:
+
+|Name|Pricing (input token)|Pricing(output token)|
+|---|---|---|
+|`gpt-3.5-turbo`|0.0015|0.002|
+|`gpt-3.5-turbo-0613`|0.0015|0.002|
+|`gpt-3.5-turbo-16k`|0.003|0.004|
+|`gpt-4`|0.03|0.06|
+|`gpt-4-0613`|0.03|0.06|
+|`gpt-4-32k`|0.06|0.12|
+|`gpt-4-32k-0613`|0.06|0.12|
+
+Pricing is calculated as $/1000 tokens.
 
 Check [this page](https://platform.openai.com/docs/models) for the technical details of each model.
 
@@ -53,6 +65,10 @@ Launch the *chatgpt.py* script (depending on your environment you may need to us
 Then just chat! The number next to the prompt is the [tokens](https://platform.openai.com/tokenizer) used in the conversation at that point.
 
 Use the `/q` command to quit and show the number of total tokens used and an estimate of the expense for that session, based on the specific model in use.
+
+## Multiline input
+
+Add the `--multiline` (or `-ml`) flag in order to toggle multi-line input mode. In this mode use `Alt+Enter` or `Esc+Enter` to submit messages.
 
 ## Context
 
@@ -72,6 +88,6 @@ Typical use cases for this feature are:
 
 ## Markdown rendering
 
-ChatGPT CLI automatically renders Markdown responses from the model, including code blocks, with appropriate formatting and syntax highlighting. **The only limitation at the moment is that it is not able to handle tables or other non-standard Markdown features.**
+ChatGPT CLI automatically renders Markdown responses from the model, including code blocks, with appropriate formatting and syntax highlighting. **Update (31/05/2023):** Now tables are also rendered correctly, thanks to the new 13.4.0 release of Rich.
 
 Change the `markdown` parameter from `true` to `false` in the `config.yaml` in order to disable this feature and display responses in plain text.
