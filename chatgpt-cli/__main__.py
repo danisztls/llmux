@@ -15,15 +15,14 @@ from prompt_toolkit.history import FileHistory
 from rich.console import Console
 from rich.markdown import Markdown
 
-WORKDIR = Path(__file__).parent
-# TODO: Move history file to $XDG_DATA_HOME
-HISTORY_FILE = Path(WORKDIR, ".history")
+WORK_DIR = Path(__file__).parent
+HOME = os.getenv("HOME")
+CONFIG_DIR = Path(os.getenv("XDG_CONFIG_HOME"), "chatgpt-cli")
+DATA_DIR = Path(os.getenv("XDG_DATA_HOME"), "chatgpt-cli")
+SESSION_FILE = Path(DATA_DIR, "session-" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S") + ".json")
+HISTORY_FILE = Path(DATA_DIR, "history")
 BASE_ENDPOINT = "https://api.openai.com/v1"
 ENV_VAR = "OPENAI_API_KEY"
-SAVE_FOLDER = "session-history"
-SAVE_FILE = (
-    "chatgpt-session-" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S") + ".json"
-)
 
 PRICING_RATE = {
     "gpt-3.5-turbo": {"prompt": 0.0015, "completion": 0.002},
@@ -48,7 +47,7 @@ console = Console()
 
 def load_config() -> dict:
     """
-    Read configuration file and env vars in this order of precedence and returns config as a dictionary
+    Set defaults and read config from global and local config files. 
     """
 
     config = {
@@ -57,19 +56,14 @@ def load_config() -> dict:
         "temperature": 1
     }
 
-    # TODO: Preferentially read local config
+    global_config_file = Path(CONFIG_DIR, "config.yml")
+    local_config_file = Path(WORK_DIR, "chatgpt.yml")
 
-    if os.getenv("XDG_CONFIG_HOME"):
-        config_dir = os.getenv("XDG_CONFIG_HOME") + "/chatgpt-cli"
-    elif os.getenv("HOME"):
-        config_dir = os.getenv("HOME") + "/.config/chagpt-cli"
-
-    config_file = config_dir + "/config.yml"
-
-    if os.path.isfile(config_file):
-        with open(config_file) as file:
-            config_from_file = yaml.load(file, Loader=yaml.FullLoader)
-            config = {**config, **config_from_file}
+    for file in [global_config_file, local_config_file]:
+        if os.path.isfile(file):
+            with open(file) as config_file:
+                config_overrides = yaml.load(config_file, Loader=yaml.FullLoader)
+                config = {**config, **config_overrides}
 
     return config
 
@@ -88,20 +82,20 @@ def get_last_save_file() -> str:
     """
     Return the timestamp of the last saved session
     """
-    files = [f for f in os.listdir(SAVE_FOLDER) if f.endswith(".json")]
+    files = [f for f in os.listdir(DATA_DIR) if f.endswith(".json")]
     if files:
-        ts = [f.replace("chatgpt-session-", "").replace(".json", "") for f in files]
+        ts = [f.replace("session-", "").replace(".json", "") for f in files]
         ts.sort()
         return ts[-1]
     return None
 
 
-def create_save_folder() -> None:
+def init_dir(dir_path: str) -> None:
     """
-    Create the session history folder if not exists
+    Create a directory if it doesn't exist. 
     """
-    if not os.path.exists(SAVE_FOLDER):
-        os.mkdir(SAVE_FOLDER)
+    if not os.path.exists(dir_path):
+        os.mkdir(dir_path)
 
 
 def add_markdown_system_message() -> None:
@@ -209,7 +203,7 @@ def start_prompt(session: PromptSession, config: dict) -> None:
         messages.append(message_response)
         prompt_tokens += usage_response["prompt_tokens"]
         completion_tokens += usage_response["completion_tokens"]
-        with open(os.path.join(SAVE_FOLDER, SAVE_FILE), "w") as f:
+        with open(os.path.join(DATA_DIR, SESSION_FILE), "w") as f:
             json.dump(
                 {
                     "model": config["model"],
@@ -267,6 +261,8 @@ def start_prompt(session: PromptSession, config: dict) -> None:
     help="Restore a previous chat session (input format: YYYYMMDD-hhmmss or 'last')",
 )
 def main(context, api_key, model, multiline, restore) -> None:
+    init_dir(DATA_DIR)
+
     history = FileHistory(HISTORY_FILE)
 
     if multiline:
@@ -275,8 +271,6 @@ def main(context, api_key, model, multiline, restore) -> None:
         session = PromptSession(history=history)
 
     config = load_config()
-
-    create_save_folder()
 
     # Order of precedence for API Key configuration:
     # Command line option > Environment variable > Configuration file
@@ -318,7 +312,7 @@ def main(context, api_key, model, multiline, restore) -> None:
             global prompt_tokens, completion_tokens
             # If this feature is used --context is cleared
             messages.clear()
-            history_data = load_history_data(os.path.join(SAVE_FOLDER, restore_file))
+            history_data = load_history_data(os.path.join(DATA_DIR, restore_file))
             for message in history_data["messages"]:
                 messages.append(message)
             prompt_tokens += history_data["prompt_tokens"]
