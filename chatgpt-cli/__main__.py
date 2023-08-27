@@ -261,6 +261,8 @@ def start_prompt(session: PromptSession, config: dict) -> None:
     help="Restore a previous chat session (input format: YYYYMMDD-hhmmss or 'last')",
 )
 def main(context, api_key, model, multiline, restore) -> None:
+    console.print("ChatGPT CLI", style="bold")
+
     init_dir(DATA_DIR)
 
     history = FileHistory(HISTORY_FILE)
@@ -288,7 +290,6 @@ def main(context, api_key, model, multiline, restore) -> None:
     # Run the display expense function when exiting the script
     atexit.register(display_expense, model=config["model"])
 
-    console.print("ChatGPT CLI", style="bold")
     console.print(f"Model in use: [green bold]{config['model']}")
 
     # Add the system message for code blocks in case markdown is enabled in the config file

@@ -6,15 +6,13 @@
 
 Simple script for chatting with ChatGPT from the command line, using the official API ([Released March 1st, 2023](https://openai.com/blog/introducing-chatgpt-and-whisper-apis)). It allows, after providing a valid API Key, to use ChatGPT at the maximum speed, at a fraction of the cost of a full ChatGPT Plus subscription (at least for the average user).
 
-## How to get an API Key
+## Get an API Key
 
 Go to [platform.openai.com](https://platform.openai.com) and log-in with your OpenAI account (register if you don't have one). Click on your name initial in the top-right corner, then select *"View API keys"*. Finally click on *"Create new secret key"*. That's it.
 
 You may also need to add a payment method, clicking on *Billing --> Payment methods*. New accounts should have some free credits, but adding a payment method may still be mandatory. For pricing, check [this page](https://openai.com/pricing).
 
-## Installation and essential configuration
-
-You need Python and Git installed on your system.
+## Installation
 
 Clone the repository:
 
@@ -32,15 +30,19 @@ or with Poetry:
 
 After that, you need to configure your API Key. There are three alternative ways to provide this parameter:
 
-- Edit the `api-key` parameter in the *config.yaml* file
+- Edit the `api-key` parameter in the *config.yml* file
 - Set the environment variable `OPENAI_API_KEY` (Check your operating system's documentation on how to do this)
 - Use the command line option `--key` or `-k`
 
 If more then one API Key is provided, ChatGPT CLI follows this priority order: *Command line option > Environment variable > Configuration file*
 
+### Configuration file
+
+The configuration file is expected at `$XDG_CONFIG_HOME/chatgpt-cli/config.yml`. *$XDG_CONFIG_HOME* is the default config directory of the user defined by the [XDG Base Directory Specification](https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html) and is typically defined as `~/.config`.
+
 ## Models
 
-ChatGPT CLI, by default, uses the original `gpt-3.5-turbo` model. In order to use other ChatGPT models, edit the `model` parameter in the *config.yaml* file ore use the `--model` command line option. Here is a list of all the available options:
+ChatGPT CLI, by default, uses the original `gpt-3.5-turbo` model. In order to use other ChatGPT models, edit the `model` parameter in the *config.yml* file ore use the `--model` command line option. Here is a list of all the available options:
 
 |Name|Pricing (input token)|Pricing(output token)|
 |---|---|---|
@@ -90,7 +92,7 @@ Typical use cases for this feature are:
 
 ChatGPT CLI automatically renders Markdown responses from the model, including code blocks, with appropriate formatting and syntax highlighting. **Update (31/05/2023):** Now tables are also rendered correctly, thanks to the new 13.4.0 release of Rich.
 
-Change the `markdown` parameter from `true` to `false` in the `config.yaml` in order to disable this feature and display responses in plain text.
+Change the `markdown` parameter from `true` to `false` in the `config.yml` in order to disable this feature and display responses in plain text.
 
 ## Restoring previous sessions
 
