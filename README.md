@@ -6,6 +6,8 @@
 
 Simple script for chatting with ChatGPT from the command line, using the official API ([Released March 1st, 2023](https://openai.com/blog/introducing-chatgpt-and-whisper-apis)). It allows, after providing a valid API Key, to use ChatGPT at the maximum speed, at a fraction of the cost of a full ChatGPT Plus subscription (at least for the average user).
 
+This is a fork of [marcolardera/chatgpt-cli](https://github.com/marcolardera/chatgpt-cli.git).
+
 ## Get an API Key
 
 Go to [platform.openai.com](https://platform.openai.com) and log-in with your OpenAI account (register if you don't have one). Click on your name initial in the top-right corner, then select *"View API keys"*. Finally click on *"Create new secret key"*. That's it.
@@ -16,7 +18,7 @@ You may also need to add a payment method, clicking on *Billing --> Payment meth
 
 Clone the repository:
 
-`git clone https://github.com/marcolardera/chatgpt-cli.git`
+`git clone https://github.com/danisztls/chatgpt-cli.git`
 
 `cd chatgpt-cli`
 
