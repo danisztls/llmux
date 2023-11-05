@@ -2,8 +2,6 @@
 
 Large language model inference for power users. At the current development stage it is more or less a ChatGPT CLI/TUI.
 
-This is a fork of [marcolardera/llmux](https://github.com/marcolardera/chatgpt-cli.git).
-
 ## Get started
 
 ### Install
