@@ -1,10 +1,10 @@
-# LLMux 
+# LLMux
 
-Large language model inference for power users. At the current development stage it is more or less ChatGPT in a text interface.
+Large language model inference for power users. At the current development stage it is more or less a ChatGPT CLI/TUI.
 
 This is a fork of [marcolardera/llmux](https://github.com/marcolardera/chatgpt-cli.git).
 
-## Get started 
+## Get started
 
 ### Install
 
@@ -12,19 +12,17 @@ This is a fork of [marcolardera/llmux](https://github.com/marcolardera/chatgpt-c
 
 ### Get an API key
 
-Go to [platform.openai.com](https://platform.openai.com) and log-in with your OpenAI account (register if you don't have one). Click on your name initial in the top-right corner, then select *"View API keys"*. Finally click on *"Create new secret key"*. That's it.
+Go to [platform.openai.com](https://platform.openai.com) and log-in with your OpenAI account (register if you don't have one). Click on your name initial in the top-right corner, then select _"View API keys"_. Finally click on _"Create new secret key"_. That's it.
 
-You may also need to add a payment method, clicking on *Billing --> Payment methods*. New accounts should have some free credits, but adding a payment method may still be mandatory. For pricing, check [this page](https://openai.com/pricing).
+You may also need to add a payment method, clicking on _Billing --> Payment methods_. New accounts should have some free credits, but adding a payment method may still be mandatory. For pricing, check [this page](https://openai.com/pricing).
 
 ### Configure API key
 
 There are three alternatives.
 
-a. Export the key as an env var: 
+a. Export the key as an env var: `export OPENAI_API_KEY="<YOUR_KEY>"`
 
-`export OPENAI_API_KEY="<YOUR_KEY>"`
-
-b. Create configuration at `$XDG_CONFIG_HOME/llmux/config.yaml` or at `./llmux.yaml`:
+b. Create a global configuration at `$XDG_CONFIG_HOME/llmux/config.yaml` or a local at `./llmux.yaml`:
 
 ```yaml
 api-key: "YOUR_KEY"
@@ -32,7 +30,7 @@ api-key: "YOUR_KEY"
 
 c. Use the command line option `--key <YOUR_KEY>`.
 
-The configuration priority order is: *Command line option > Environment variable > Local configuration file > Global configuration file*.
+The configuration priority order is: _Command line option > Environment variable > Local configuration file > Global configuration file_.
 
 ### Usage
 
@@ -42,41 +40,42 @@ The number next to the prompt is the [tokens](https://platform.openai.com/tokeni
 
 Use the `/q` command to quit and show the number of total tokens used and an estimate of the expense for that session, based on the specific model in use.
 
-## Advanced configuration 
+## Advanced configuration
 
 ```yaml
 model: "gpt-3.5-turbo"
-markdown: false 
-max_tokens: 500 
+markdown: false
+max_tokens: 500
 temperature: 1
 ```
 
 ### Models
 
-ChatGPT CLI, by default, uses the original `gpt-3.5-turbo` model. In order to use other ChatGPT models, edit the `model` parameter in the *config.yml* file ore use the `--model` command line option. Here is a list of all the available options:
+ChatGPT CLI, by default, uses the original `gpt-3.5-turbo` model. In order to use other ChatGPT models, edit the `model` parameter in the _config.yml_ file ore use the `--model` command line option. Here is a list of all the available options:
 
-|Name|Pricing (input token)|Pricing(output token)|
-|---|---|---|
-|`gpt-3.5-turbo`|0.0015|0.002|
-|`gpt-3.5-turbo-0613`|0.0015|0.002|
-|`gpt-3.5-turbo-16k`|0.003|0.004|
-|`gpt-4`|0.03|0.06|
-|`gpt-4-0613`|0.03|0.06|
-|`gpt-4-32k`|0.06|0.12|
-|`gpt-4-32k-0613`|0.06|0.12|
+| Name                 | Pricing (input token) | Pricing(output token) |
+| -------------------- | --------------------- | --------------------- |
+| `gpt-3.5-turbo`      | 0.0015                | 0.002                 |
+| `gpt-3.5-turbo-0613` | 0.0015                | 0.002                 |
+| `gpt-3.5-turbo-16k`  | 0.003                 | 0.004                 |
+| `gpt-4`              | 0.03                  | 0.06                  |
+| `gpt-4-0613`         | 0.03                  | 0.06                  |
+| `gpt-4-32k`          | 0.06                  | 0.12                  |
+| `gpt-4-32k-0613`     | 0.06                  | 0.12                  |
 
 Pricing is calculated as $/1000 tokens.
 
 Check [this page](https://platform.openai.com/docs/models) for the technical details of each model.
 
 ## Advanced usage
+
 ### Multiline input
 
 Add the `--multiline` (or `-ml`) flag in order to toggle multi-line input mode. In this mode use `Alt+Enter` or `Esc+Enter` to submit messages.
 
 ### Context
 
-Use the `--context <FILE PATH>` command line option (or `-c` as a short version) in order to provide the model an initial context (technically a *system* message for ChatGPT). For example:
+Use the `--context <FILE PATH>` command line option (or `-c` as a short version) in order to provide the model an initial context (technically a _system_ message for ChatGPT). For example:
 
 `llmux --context notes.txt`
 
