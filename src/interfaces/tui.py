@@ -17,8 +17,8 @@ from rich.markdown import Markdown
 
 WORK_DIR = Path(__file__).parent
 HOME = os.getenv("HOME")
-CONFIG_DIR = Path(os.getenv("XDG_CONFIG_HOME"), "chatgpt-cli")
-DATA_DIR = Path(os.getenv("XDG_DATA_HOME"), "chatgpt-cli")
+CONFIG_DIR = Path(os.getenv("XDG_CONFIG_HOME"), "llmux")
+DATA_DIR = Path(os.getenv("XDG_DATA_HOME"), "llmux")
 SESSION_FILE = Path(DATA_DIR, "session-" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S") + ".json")
 HISTORY_FILE = Path(DATA_DIR, "history")
 BASE_ENDPOINT = "https://api.openai.com/v1"
@@ -57,7 +57,7 @@ def load_config() -> dict:
     }
 
     global_config_file = Path(CONFIG_DIR, "config.yml")
-    local_config_file = Path(WORK_DIR, "chatgpt.yml")
+    local_config_file = Path(WORK_DIR, "llmux.yml")
 
     for file in [global_config_file, local_config_file]:
         if os.path.isfile(file):
@@ -311,9 +311,9 @@ def main(context, api_key, model, multiline, restore) -> None:
     if restore:
         if restore == "last":
             last_session = get_last_save_file()
-            restore_file = f"chatgpt-session-{last_session}.json"
+            restore_file = f"llmux-session-{last_session}.json"
         else:
-            restore_file = f"chatgpt-session-{restore}.json"
+            restore_file = f"llmux-session-{restore}.json"
         try:
             global prompt_tokens, completion_tokens
             # If this feature is used --context is cleared
