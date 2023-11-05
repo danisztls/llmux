@@ -3,14 +3,16 @@ requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
-name = "chatgpt-cli"
+name = "llmux"
 version = "0.1.0"
-description = "Simple command line tool for chatting with ChatGPT using the official API"
-authors = ["Marco Lardera", "Daniel Souza"] # run 'git shortlog -sne' to get a better list 
-homepage = "https://github.com/danisztls/chatgpt-cli"
+description = "LLM inference for power users."
+authors = ["Daniel Souza"] # run 'git shortlog -sne' to get a better list 
+homepage = "https://github.com/danisztls/llmux"
 readme = "README.md"
 packages = [
-  { include = "chatgpt-cli" },
+  { include = "interfaces", from = "src" },
+  # { include = "core", from = "src" },
+  # { include = "extractors", from = "src" },
 ]
 
 [tool.poetry.dependencies]
@@ -35,3 +37,6 @@ tomli = "^2.0"
 typing_extensions = "^4.6"
 urllib3 = "^1.26"
 wcwidth = "0.2"
+
+[tool.poetry.scripts]
+llmux = "interfaces.tui:main"
