@@ -53,7 +53,8 @@ def load_config() -> dict:
     config = {
         "api-key": "",
         "model": "gpt-3.5-turbo",
-        "temperature": 1
+        "temperature": 1,
+        "markdown": True
     }
 
     global_config_file = Path(CONFIG_DIR, "config.yml")
