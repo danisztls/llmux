@@ -337,7 +337,3 @@ def main(context, api_key, model, multiline, restore) -> None:
             continue
         except EOFError:
             break
-
-
-if __name__ == "__main__":
-    main()
