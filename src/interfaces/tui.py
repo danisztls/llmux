@@ -24,16 +24,19 @@ HISTORY_FILE = Path(DATA_DIR, "history")
 BASE_ENDPOINT = "https://api.openai.com/v1"
 ENV_VAR = "OPENAI_API_KEY"
 
+# NOTE: Leaving out legacy models.
+# https://platform.openai.com/docs/models
+# https://openai.com/pricing
 PRICING_RATE = {
-    "gpt-3.5-turbo": {"prompt": 0.0015, "completion": 0.002},
-    "gpt-3.5-turbo-0613": {"prompt": 0.0015, "completion": 0.002},
-    "gpt-3.5-turbo-16k": {"prompt": 0.003, "completion": 0.004},
+    "gpt-3.5-turbo": {"prompt": 0.001, "completion": 0.002},
+    "gpt-3.5-turbo-1106": {"prompt": 0.001, "completion": 0.002},
+    "gpt-3.5-turbo-16k": {"prompt": 0.001, "completion": 0.002},
     "gpt-4": {"prompt": 0.03, "completion": 0.06},
     "gpt-4-0613": {"prompt": 0.03, "completion": 0.06},
+    "gpt-4-1106-preview": {"prompt": 0.03, "completion": 0.06},
     "gpt-4-32k": {"prompt": 0.06, "completion": 0.12},
     "gpt-4-32k-0613": {"prompt": 0.06, "completion": 0.12},
 }
-
 
 # Initialize the messages history list
 # It's mandatory to pass it at each API call in order to have a conversation
