@@ -60,8 +60,8 @@ def load_config() -> dict:
         "markdown": True
     }
 
-    global_config_file = Path(CONFIG_DIR, "config.yml")
-    local_config_file = Path(WORK_DIR, "llmux.yml")
+    global_config_file = Path(CONFIG_DIR, "config.yaml")
+    local_config_file = Path(WORK_DIR, "llmux.yaml")
 
     for file in [global_config_file, local_config_file]:
         if os.path.isfile(file):
