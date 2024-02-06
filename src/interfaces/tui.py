@@ -160,7 +160,7 @@ def start_prompt(session: PromptSession, config: dict) -> None:
 
     message = session.prompt(HTML(f"<b>[{prompt_tokens + completion_tokens}] >>> </b>"))
 
-    if message.lower() == "/q":
+    if message.lower().strip() == "/q":
         raise EOFError
     if message.lower() == "":
         raise KeyboardInterrupt
