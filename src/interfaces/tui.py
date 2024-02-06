@@ -21,7 +21,7 @@ CONFIG_DIR = Path(os.getenv("XDG_CONFIG_HOME"), "llmux")
 DATA_DIR = Path(os.getenv("XDG_DATA_HOME"), "llmux")
 SESSION_FILE = Path(DATA_DIR, "session-" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S") + ".json")
 HISTORY_FILE = Path(DATA_DIR, "history")
-BASE_ENDPOINT = "https://api.openai.com/v1"
+BASE_ENDPOINT = os.environ.get('OPENAI_BASE_ENDPOINT', "https://api.openai.com/v1") 
 ENV_VAR = "OPENAI_API_KEY"
 
 # NOTE: Leaving out legacy models.
