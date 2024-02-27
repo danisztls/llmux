@@ -1,2 +1,9 @@
-session-history/
+# python cache
 **/__pycache__
+
+# dist artifacts
+dist/*.whl
+dist/*.tar.gz
+
+# misc
+session-history/
