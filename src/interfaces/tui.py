@@ -28,15 +28,23 @@ ENV_VAR = "OPENAI_API_KEY"
 # https://platform.openai.com/docs/models
 # https://openai.com/pricing
 PRICING_RATE = {
-    "gpt-3.5-turbo": {"prompt": 0.001, "completion": 0.002},
-    "gpt-3.5-turbo-1106": {"prompt": 0.001, "completion": 0.002},
-    "gpt-3.5-turbo-16k": {"prompt": 0.001, "completion": 0.002},
-    "gpt-4": {"prompt": 0.03, "completion": 0.06},
-    "gpt-4-0613": {"prompt": 0.03, "completion": 0.06},
-    "gpt-4-1106-preview": {"prompt": 0.03, "completion": 0.06},
-    "gpt-4-32k": {"prompt": 0.06, "completion": 0.12},
-    "gpt-4-32k-0613": {"prompt": 0.06, "completion": 0.12},
+    "gpt-4-0125-preview": {"prompt": 0.01, "completion": 0.03, "max_tokens": 128000},
+    "gpt-4-turbo-preview": {"prompt": 0.01, "completion": 0.03, "max_tokens": 128000},
+    "gpt-4-1106-preview": {"prompt": 0.01, "completion": 0.03, "max_tokens": 128000},
+    "gpt-4": {"prompt": 0.03, "completion": 0.06, "max_tokens": 8192},
+    "gpt-4-0613": {"prompt": 0.03, "completion": 0.06, "max_tokens": 8192},
+    "gpt-4-32k": {"prompt": 0.06, "completion": 0.12, "max_tokens": 32768, "is_legacy": True},
+    "gpt-4-32k-0613": {"prompt": 0.06, "completion": 0.12, "max_tokens": 32768, "is_legacy": True},
+    "gpt-3.5-turbo-0125": {"prompt": 0.0005, "completion": 0.0015, "max_tokens": 16385},
+    "gpt-3.5-turbo": {"prompt": 0.0005, "completion": 0.0015, "max_tokens": 4096},
+    "gpt-3.5-turbo-1106": {"prompt": 0.0005, "completion": 0.0015, "max_tokens": 16385},
+    "gpt-3.5-turbo-instruct": {"prompt": 0.0015, "completion": 0.002, "max_tokens": 4096},
+    "gpt-3.5-turbo-16k": {"prompt": 0.0005, "completion": 0.0015, "max_tokens": 16385, "is_legacy": True},
+    "gpt-3.5-turbo-0613": {"prompt": 0.0005, "completion": 0.0015, "max_tokens": 4096, "is_legacy": True},
+    "gpt-3.5-turbo-16k-0613": {"prompt": 0.0005, "completion": 0.0015, "max_tokens": 16385, "is_legacy": True},
 }
+
+# NOTE: While gpt-4-32k is not officialy tagged as legacy it makes sense to use gpt-4-turbo instead (cheaper and with larger context. Though this might not be case. Is the larger context due to summarization?
 
 # Initialize the messages history list
 # It's mandatory to pass it at each API call in order to have a conversation
@@ -55,7 +63,7 @@ def load_config() -> dict:
 
     config = {
         "api-key": "",
-        "model": "gpt-3.5-turbo",
+        "model": "gpt-4-turbo-preview",
         "temperature": 1,
         "markdown": True
     }
