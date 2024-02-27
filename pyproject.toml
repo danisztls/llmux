@@ -9,11 +9,6 @@ description = "LLM inference for power users."
 authors = ["Daniel Souza"] # run 'git shortlog -sne' to get a better list 
 homepage = "https://github.com/danisztls/llmux"
 readme = "README.md"
-packages = [
-  { include = "interfaces", from = "src" },
-  # { include = "core", from = "src" },
-  # { include = "extractors", from = "src" },
-]
 
 [tool.poetry.dependencies]
 python = "^3.10"
@@ -39,4 +34,4 @@ urllib3 = "^1.26"
 wcwidth = "0.2"
 
 [tool.poetry.scripts]
-llmux = "interfaces.tui:main"
+llmux = "llmux.interfaces.tui:main"
