@@ -11,7 +11,7 @@ homepage = "https://github.com/danisztls/llmux"
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = "^3.11"
 black = "^23.1"
 certifi = "^2022.12.7"
 charset-normalizer = "^3.1"
