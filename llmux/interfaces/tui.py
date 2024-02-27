@@ -18,9 +18,11 @@ WORK_DIR = Path(__file__).parent
 HOME = os.getenv("HOME")
 CONFIG_DIR = Path(os.getenv("XDG_CONFIG_HOME"), "llmux")
 DATA_DIR = Path(os.getenv("XDG_DATA_HOME"), "llmux")
-SESSION_FILE = Path(DATA_DIR, "session-" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S") + ".json")
+SESSION_FILE = Path(
+    DATA_DIR, "session-" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S") + ".json"
+)
 HISTORY_FILE = Path(DATA_DIR, "history")
-BASE_ENDPOINT = os.environ.get('OPENAI_BASE_ENDPOINT', "https://api.openai.com/v1") 
+BASE_ENDPOINT = os.environ.get("OPENAI_BASE_ENDPOINT", "https://api.openai.com/v1")
 ENV_VAR = "OPENAI_API_KEY"
 
 # NOTE: Leaving out legacy models.
@@ -32,15 +34,44 @@ PRICING_RATE = {
     "gpt-4-1106-preview": {"prompt": 0.01, "completion": 0.03, "max_tokens": 128000},
     "gpt-4": {"prompt": 0.03, "completion": 0.06, "max_tokens": 8192},
     "gpt-4-0613": {"prompt": 0.03, "completion": 0.06, "max_tokens": 8192},
-    "gpt-4-32k": {"prompt": 0.06, "completion": 0.12, "max_tokens": 32768, "is_legacy": True},
-    "gpt-4-32k-0613": {"prompt": 0.06, "completion": 0.12, "max_tokens": 32768, "is_legacy": True},
+    "gpt-4-32k": {
+        "prompt": 0.06,
+        "completion": 0.12,
+        "max_tokens": 32768,
+        "is_legacy": True,
+    },
+    "gpt-4-32k-0613": {
+        "prompt": 0.06,
+        "completion": 0.12,
+        "max_tokens": 32768,
+        "is_legacy": True,
+    },
     "gpt-3.5-turbo-0125": {"prompt": 0.0005, "completion": 0.0015, "max_tokens": 16385},
     "gpt-3.5-turbo": {"prompt": 0.0005, "completion": 0.0015, "max_tokens": 4096},
     "gpt-3.5-turbo-1106": {"prompt": 0.0005, "completion": 0.0015, "max_tokens": 16385},
-    "gpt-3.5-turbo-instruct": {"prompt": 0.0015, "completion": 0.002, "max_tokens": 4096},
-    "gpt-3.5-turbo-16k": {"prompt": 0.0005, "completion": 0.0015, "max_tokens": 16385, "is_legacy": True},
-    "gpt-3.5-turbo-0613": {"prompt": 0.0005, "completion": 0.0015, "max_tokens": 4096, "is_legacy": True},
-    "gpt-3.5-turbo-16k-0613": {"prompt": 0.0005, "completion": 0.0015, "max_tokens": 16385, "is_legacy": True},
+    "gpt-3.5-turbo-instruct": {
+        "prompt": 0.0015,
+        "completion": 0.002,
+        "max_tokens": 4096,
+    },
+    "gpt-3.5-turbo-16k": {
+        "prompt": 0.0005,
+        "completion": 0.0015,
+        "max_tokens": 16385,
+        "is_legacy": True,
+    },
+    "gpt-3.5-turbo-0613": {
+        "prompt": 0.0005,
+        "completion": 0.0015,
+        "max_tokens": 4096,
+        "is_legacy": True,
+    },
+    "gpt-3.5-turbo-16k-0613": {
+        "prompt": 0.0005,
+        "completion": 0.0015,
+        "max_tokens": 16385,
+        "is_legacy": True,
+    },
 }
 
 # NOTE: While gpt-4-32k is not officialy tagged as legacy it makes sense to use gpt-4-turbo instead (cheaper and with larger context. Though this might not be case. Is the larger context due to summarization?
@@ -57,14 +88,14 @@ console = Console()
 
 def load_config() -> dict:
     """
-    Set defaults and read config from global and local config files. 
+    Set defaults and read config from global and local config files.
     """
 
     config = {
         "api-key": "",
         "model": "gpt-4-turbo-preview",
         "temperature": 1,
-        "markdown": True
+        "markdown": True,
     }
 
     global_config_file = Path(CONFIG_DIR, "config.yaml")
@@ -103,7 +134,7 @@ def get_last_save_file() -> str:
 
 def init_dir(dir_path: str) -> None:
     """
-    Create a directory if it doesn't exist. 
+    Create a directory if it doesn't exist.
     """
     if not os.path.exists(dir_path):
         os.mkdir(dir_path)
@@ -133,7 +164,7 @@ def calculate_expense(
     # Format to display in decimal notation rounded to 6 decimals
     expense = "{:.6f}".format(round(expense, 6))
 
-    return expense 
+    return expense
 
 
 def display_expense(model: str) -> None:
@@ -244,7 +275,7 @@ def start_prompt(session: PromptSession, config: dict) -> None:
         console.print("Rate limit or maximum monthly limit exceeded", style="bold red")
         messages.pop()
         raise KeyboardInterrupt
-    
+
     elif r.status_code == 502 or r.status_code == 503:
         console.print("The server seems to be overloaded, try again", style="bold red")
         messages.pop()
@@ -347,6 +378,7 @@ def main(context, api_key, model, multiline, restore) -> None:
             continue
         except EOFError:
             break
+
 
 if __name__ == "__main__":
     main()
