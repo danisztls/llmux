@@ -5,7 +5,6 @@ import click
 import datetime
 import os
 import requests
-import sys
 import yaml
 import json
 
