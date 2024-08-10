@@ -29,6 +29,10 @@ ENV_VAR = "OPENAI_API_KEY"
 # https://platform.openai.com/docs/models
 # https://openai.com/pricing
 PRICING_RATE = {
+    "gpt-4o": {"prompt": 0.000005, "completion": 0.000015, "max_tokens": 128000},
+    "gpt-4o-2024-08-06": {"prompt": 0.0000025, "completion": 0.00001, "max_tokens": 128000},
+    "gpt-4o-mini": {"prompt": 0.0000015, "completion": 0.000006, "max_tokens": 128000},
+    # all below are legacy
     "gpt-4-0125-preview": {"prompt": 0.01, "completion": 0.03, "max_tokens": 128000},
     "gpt-4-turbo-preview": {"prompt": 0.01, "completion": 0.03, "max_tokens": 128000},
     "gpt-4-1106-preview": {"prompt": 0.01, "completion": 0.03, "max_tokens": 128000},
@@ -93,7 +97,7 @@ def load_config() -> dict:
 
     config = {
         "api-key": "",
-        "model": "gpt-4-turbo-preview",
+        "model": "gpt-4o",
         "temperature": 1,
         "markdown": True,
     }
