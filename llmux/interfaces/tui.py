@@ -29,51 +29,51 @@ ENV_VAR = "OPENAI_API_KEY"
 # https://platform.openai.com/docs/models
 # https://openai.com/pricing
 PRICING_RATE = {
-    "gpt-4o": {"prompt": 0.000005, "completion": 0.000015, "max_tokens": 128000},
-    "gpt-4o-2024-08-06": {"prompt": 0.0000025, "completion": 0.00001, "max_tokens": 128000},
-    "gpt-4o-mini": {"prompt": 0.0000015, "completion": 0.000006, "max_tokens": 128000},
+    "gpt-4o": {"prompt": 0.000005, "completion": 0.000015, "context_window": 128000},
+    "gpt-4o-2024-08-06": {"prompt": 0.0000025, "completion": 0.00001, "context_window": 128000},
+    "gpt-4o-mini": {"prompt": 0.0000015, "completion": 0.000006, "context_window": 128000},
     # all below are legacy
-    "gpt-4-0125-preview": {"prompt": 0.01, "completion": 0.03, "max_tokens": 128000},
-    "gpt-4-turbo-preview": {"prompt": 0.01, "completion": 0.03, "max_tokens": 128000},
-    "gpt-4-1106-preview": {"prompt": 0.01, "completion": 0.03, "max_tokens": 128000},
-    "gpt-4": {"prompt": 0.03, "completion": 0.06, "max_tokens": 8192},
-    "gpt-4-0613": {"prompt": 0.03, "completion": 0.06, "max_tokens": 8192},
+    "gpt-4-0125-preview": {"prompt": 0.01, "completion": 0.03, "context_window": 128000},
+    "gpt-4-turbo-preview": {"prompt": 0.01, "completion": 0.03, "context_window": 128000},
+    "gpt-4-1106-preview": {"prompt": 0.01, "completion": 0.03, "context_window": 128000},
+    "gpt-4": {"prompt": 0.03, "completion": 0.06, "context_window": 8192},
+    "gpt-4-0613": {"prompt": 0.03, "completion": 0.06, "context_window": 8192},
     "gpt-4-32k": {
         "prompt": 0.06,
         "completion": 0.12,
-        "max_tokens": 32768,
+        "context_window": 32768,
         "is_legacy": True,
     },
     "gpt-4-32k-0613": {
         "prompt": 0.06,
         "completion": 0.12,
-        "max_tokens": 32768,
+        "context_window": 32768,
         "is_legacy": True,
     },
-    "gpt-3.5-turbo-0125": {"prompt": 0.0005, "completion": 0.0015, "max_tokens": 16385},
-    "gpt-3.5-turbo": {"prompt": 0.0005, "completion": 0.0015, "max_tokens": 4096},
-    "gpt-3.5-turbo-1106": {"prompt": 0.0005, "completion": 0.0015, "max_tokens": 16385},
+    "gpt-3.5-turbo-0125": {"prompt": 0.0005, "completion": 0.0015, "context_window": 16385},
+    "gpt-3.5-turbo": {"prompt": 0.0005, "completion": 0.0015, "context_window": 4096},
+    "gpt-3.5-turbo-1106": {"prompt": 0.0005, "completion": 0.0015, "context_window": 16385},
     "gpt-3.5-turbo-instruct": {
         "prompt": 0.0015,
         "completion": 0.002,
-        "max_tokens": 4096,
+        "context_window": 4096,
     },
     "gpt-3.5-turbo-16k": {
         "prompt": 0.0005,
         "completion": 0.0015,
-        "max_tokens": 16385,
+        "context_window": 16385,
         "is_legacy": True,
     },
     "gpt-3.5-turbo-0613": {
         "prompt": 0.0005,
         "completion": 0.0015,
-        "max_tokens": 4096,
+        "context_window": 4096,
         "is_legacy": True,
     },
     "gpt-3.5-turbo-16k-0613": {
         "prompt": 0.0005,
         "completion": 0.0015,
-        "max_tokens": 16385,
+        "context_window": 16385,
         "is_legacy": True,
     },
 }
@@ -216,8 +216,8 @@ def start_prompt(session: PromptSession, config: dict) -> None:
         "messages": messages,
     }
     # Optional parameter
-    if "max_tokens" in config:
-        body["max_tokens"] = config["max_tokens"]
+    if "context_window" in config:
+        body["context_window"] = config["context_window"]
 
     try:
         r = requests.post(
