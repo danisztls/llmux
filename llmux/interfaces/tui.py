@@ -29,9 +29,14 @@ ENV_VAR = "OPENAI_API_KEY"
 # https://platform.openai.com/docs/models
 # https://openai.com/pricing
 PRICING_RATE = {
+    "o1-preview": {"prompt": 0.000015, "completion": 0.000060, "context_window": 128000},
+    "o1-preview-2024-09-12": {"prompt": 0.000015, "completion": 0.000060, "context_window": 128000},
+    "o1-mini": {"prompt": 0.000003, "completion": 0.000012, "context_window": 128000},
     "gpt-4o": {"prompt": 0.000005, "completion": 0.000015, "context_window": 128000},
     "gpt-4o-2024-08-06": {"prompt": 0.0000025, "completion": 0.00001, "context_window": 128000},
+    "gpt-4o-2024-05-13": {"prompt": 0.000005, "completion": 0.000015, "context_window": 128000},
     "gpt-4o-mini": {"prompt": 0.0000015, "completion": 0.000006, "context_window": 128000},
+    "gpt-4o-mini-2024-07-18": {"prompt": 0.0000015, "completion": 0.000006, "context_window": 128000},
     # all below are legacy
     "gpt-4-0125-preview": {"prompt": 0.01, "completion": 0.03, "context_window": 128000},
     "gpt-4-turbo-preview": {"prompt": 0.01, "completion": 0.03, "context_window": 128000},
