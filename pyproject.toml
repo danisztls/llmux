@@ -9,7 +9,6 @@ description = "LLM inference for power users."
 authors = ["Daniel Souza"] # run 'git shortlog -sne' to get a better list 
 homepage = "https://github.com/danisztls/llmux"
 readme = "README.md"
-package-mode = false
 
 [tool.poetry.dependencies]
 python = "^3.12"
