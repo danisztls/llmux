@@ -25,129 +25,32 @@ HISTORY_FILE = Path(DATA_DIR, "history")
 BASE_ENDPOINT = os.environ.get("OPENAI_BASE_ENDPOINT", "https://api.openai.com/v1")
 ENV_VAR = "OPENAI_API_KEY"
 
-# NOTE: Leaving out legacy models.
 # https://platform.openai.com/docs/models
-# https://openai.com/pricing
+# https://platform.openai.com/docs/pricing
 PRICING_RATE = {
-    "o1-preview": {
-        "prompt": 0.000015,
-        "completion": 0.000060,
-        "context_window": 128000,
-    },
-    "o1-preview-2024-09-12": {
-        "prompt": 0.000015,
-        "completion": 0.000060,
-        "context_window": 128000,
-    },
-    "o1-mini": {"prompt": 0.000003, "completion": 0.000012, "context_window": 128000},
-    "gpt-4o": {"prompt": 0.000005, "completion": 0.000015, "context_window": 128000},
-    "gpt-4o-2024-08-06": {
-        "prompt": 0.0000025,
-        "completion": 0.00001,
-        "context_window": 128000,
-    },
-    "gpt-4o-2024-05-13": {
-        "prompt": 0.000005,
-        "completion": 0.000015,
+    "gpt-4o": {"input_cost": 2.5, "output_cost": 10, "context_window": 128000},
+    "chatgpt-4o-latest": {
+        "input_cost": 2.5,
+        "output_cost": 10,
         "context_window": 128000,
     },
     "gpt-4o-mini": {
-        "prompt": 0.0000015,
-        "completion": 0.000006,
+        "input_cost": 0.15,
+        "output_cost": 0.6,
         "context_window": 128000,
     },
-    "gpt-4o-mini-2024-07-18": {
-        "prompt": 0.0000015,
-        "completion": 0.000006,
-        "context_window": 128000,
+    "o1": {
+        "input_cost": 15,
+        "output_cost": 60,
+        "context_window": 200000,
     },
-    "gpt-4-0125-preview": {
-        "prompt": 0.01,
-        "completion": 0.03,
-        "context_window": 128000,
-        "is_legacy": True,
-    },
-    "gpt-4-turbo-preview": {
-        "prompt": 0.01,
-        "completion": 0.03,
-        "context_window": 128000,
-        "is_legacy": True,
-    },
-    "gpt-4-1106-preview": {
-        "prompt": 0.01,
-        "completion": 0.03,
-        "context_window": 128000,
-        "is_legacy": True,
-    },
-    "gpt-4": {
-        "prompt": 0.03,
-        "completion": 0.06,
-        "context_window": 8192,
-        "is_legacy": True,
-    },
-    "gpt-4-0613": {
-        "prompt": 0.03,
-        "completion": 0.06,
-        "context_window": 8192,
-        "is_legacy": True,
-    },
-    "gpt-4-32k": {
-        "prompt": 0.06,
-        "completion": 0.12,
-        "context_window": 32768,
-        "is_legacy": True,
-    },
-    "gpt-4-32k-0613": {
-        "prompt": 0.06,
-        "completion": 0.12,
-        "context_window": 32768,
-        "is_legacy": True,
-    },
-    "gpt-3.5-turbo-0125": {
-        "prompt": 0.0005,
-        "completion": 0.0015,
-        "context_window": 16385,
-        "is_legacy": True,
-    },
-    "gpt-3.5-turbo": {
-        "prompt": 0.0005,
-        "completion": 0.0015,
-        "context_window": 4096,
-        "is_legacy": True,
-    },
-    "gpt-3.5-turbo-1106": {
-        "prompt": 0.0005,
-        "completion": 0.0015,
-        "context_window": 16385,
-        "is_legacy": True,
-    },
-    "gpt-3.5-turbo-instruct": {
-        "prompt": 0.0015,
-        "completion": 0.002,
-        "context_window": 4096,
-        "is_legacy": True,
-    },
-    "gpt-3.5-turbo-16k": {
-        "prompt": 0.0005,
-        "completion": 0.0015,
-        "context_window": 16385,
-        "is_legacy": True,
-    },
-    "gpt-3.5-turbo-0613": {
-        "prompt": 0.0005,
-        "completion": 0.0015,
-        "context_window": 4096,
-        "is_legacy": True,
-    },
-    "gpt-3.5-turbo-16k-0613": {
-        "prompt": 0.0005,
-        "completion": 0.0015,
-        "context_window": 16385,
-        "is_legacy": True,
+    "o1-mini": {"input_cost": 1.1, "output_cost": 4.4, "context_window": 128000},
+    "o3-mini": {
+        "input_cost": 1.1,
+        "output_cost": 4.4,
+        "context_window": 200000,
     },
 }
-
-# NOTE: While gpt-4-32k is not officialy tagged as legacy it makes sense to use gpt-4-turbo instead (cheaper and with larger context. Though this might not be case. Is the larger context due to summarization?
 
 # Initialize the messages history list
 # It's mandatory to pass it at each API call in order to have a conversation
@@ -222,16 +125,16 @@ def add_markdown_system_message() -> None:
 
 
 def calculate_expense(
-    prompt_tokens: int,
-    completion_tokens: int,
-    prompt_pricing: float,
-    completion_pricing: float,
+    input_tokens: int,
+    output_tokens: int,
+    input_cost: float,
+    output_cost: float,
 ) -> float:
     """
     Calculate the expense, given the number of tokens and the pricing rates
     """
-    expense = ((prompt_tokens / 1000) * prompt_pricing) + (
-        (completion_tokens / 1000) * completion_pricing
+    expense = ((input_tokens / 10**6) * input_cost) + (
+        (output_tokens / 10**6) * output_cost
     )
 
     # Format to display in decimal notation rounded to 6 decimals
@@ -247,8 +150,8 @@ def display_expense(model: str) -> None:
     total_expense = calculate_expense(
         prompt_tokens,
         completion_tokens,
-        PRICING_RATE[model]["prompt"],
-        PRICING_RATE[model]["completion"],
+        PRICING_RATE[model]["input_cost"],
+        PRICING_RATE[model]["output_cost"],
     )
     console.print(
         f"\nTotal tokens used: [green bold]{prompt_tokens + completion_tokens}"
