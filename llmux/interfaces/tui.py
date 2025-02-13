@@ -55,11 +55,22 @@ MODELS_DATA = {
 # Initialize the messages history list
 # It's mandatory to pass it at each API call in order to have a conversation
 messages = []
-# Initialize the token counters
-prompt_tokens = 0
-completion_tokens = 0
 # Initialize the console
 console = Console()
+
+
+class ChatData:
+    def __init__(
+        self,
+        session: PromptSession,
+        model: str,
+        prompt_tokens=0.0,
+        completion_tokens=0.0,
+    ):
+        self.session = session
+        self.model = model
+        self.prompt_tokens = prompt_tokens
+        self.completion_tokens = completion_tokens
 
 
 def load_config() -> dict:
@@ -124,16 +135,12 @@ def add_markdown_system_message() -> None:
     messages.append({"role": "system", "content": instruction})
 
 
-def calculate_expense(
-    input_tokens: int,
-    output_tokens: int,
-    model: str
-) -> float:
+def calculate_expense(input_tokens: int, output_tokens: int, model: str) -> float:
     """
     Calculate the expense, given the number of tokens and the model pricing rates
     """
-    input_cost = MODELS_DATA[model]["input_cost"],
-    output_cost = MODELS_DATA[model]["output_cost"],
+    input_cost = MODELS_DATA[model]["input_cost"]
+    output_cost = MODELS_DATA[model]["output_cost"]
     expense = ((input_tokens / 10**6) * input_cost) + (
         (output_tokens / 10**6) * output_cost
     )
@@ -144,36 +151,33 @@ def calculate_expense(
     return expense
 
 
-def display_expense(prompt_tokens: int, completion_tokens: int, model: str) -> None:
+def display_expense(chat: ChatData) -> None:
     """
     Given the model used, display total tokens used and estimated expense
     """
-    if model not in MODELS_DATA:
-        console.print(f"[red]Model {model} not found in data.")
+    if chat.model not in MODELS_DATA:
+        console.print(f"[red]Model {chat.model} not found in data.")
         return
 
     total_expense = calculate_expense(
-        prompt_tokens,
-        completion_tokens,
-        model
+        chat.prompt_tokens, chat.completion_tokens, chat.model
     )
     console.print(f"Estimated expense: [green bold]${total_expense}")
 
 
-def start_prompt(session: PromptSession, config: dict) -> None:
+def start_prompt(chat: ChatData, config: dict) -> None:
     """
     Ask the user for input, build the request and perform it
     """
-
-    # TODO: Refactor to avoid a global variables
-    global prompt_tokens, completion_tokens
 
     headers = {
         "Content-Type": "application/json",
         "Authorization": f"Bearer {config['api-key']}",
     }
 
-    message = session.prompt(HTML(f"<b>[{prompt_tokens + completion_tokens}] >>> </b>"))
+    message = chat.session.prompt(
+        HTML(f"<b>[{chat.prompt_tokens + chat.completion_tokens}] >>> </b>")
+    )
 
     if message.lower().strip() == "/q":
         raise EOFError
@@ -220,15 +224,15 @@ def start_prompt(session: PromptSession, config: dict) -> None:
 
         # Update message history and token counters
         messages.append(message_response)
-        prompt_tokens += usage_response["prompt_tokens"]
-        completion_tokens += usage_response["completion_tokens"]
+        chat.prompt_tokens += usage_response["prompt_tokens"]
+        chat.completion_tokens += usage_response["completion_tokens"]
         with open(os.path.join(DATA_DIR, SESSION_FILE), "w") as f:
             json.dump(
                 {
                     "model": config["model"],
                     "messages": messages,
-                    "prompt_tokens": prompt_tokens,
-                    "completion_tokens": completion_tokens,
+                    "prompt_tokens": chat.prompt_tokens,
+                    "completion_tokens": chat.completion_tokens,
                 },
                 f,
                 indent=4,
@@ -311,10 +315,9 @@ def main(context, api_key, model, multiline, restore) -> None:
     if model:
         config["model"] = model.strip()
 
-    # Run the display expense function when exiting the script
-    atexit.register(display_expense, model=config["model"])
-
     console.print(f"Model in use: [green bold]{config['model']}")
+
+    chat = ChatData(session, config["model"])
 
     # Add the system message for code blocks in case markdown is enabled in the config file
     if config["markdown"]:
@@ -334,23 +337,25 @@ def main(context, api_key, model, multiline, restore) -> None:
         else:
             restore_file = f"llmux-session-{restore}.json"
         try:
-            global prompt_tokens, completion_tokens
             # If this feature is used --context is cleared
             messages.clear()
             history_data = load_history_data(os.path.join(DATA_DIR, restore_file))
             for message in history_data["messages"]:
                 messages.append(message)
-            prompt_tokens += history_data["prompt_tokens"]
-            completion_tokens += history_data["completion_tokens"]
+            chat.prompt_tokens = history_data["prompt_tokens"]
+            chat.completion_tokens = history_data["completion_tokens"]
             console.print(f"Restored session: [bold green]{restore}")
         except FileNotFoundError:
             console.print(f"[red bold]File {restore_file} not found")
 
     console.rule()
 
+    # Run the display expense function when exiting the script
+    atexit.register(display_expense, chat)
+
     while True:
         try:
-            start_prompt(session, config)
+            start_prompt(chat, config)
         except KeyboardInterrupt:
             continue
         except EOFError:
