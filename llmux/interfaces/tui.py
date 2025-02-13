@@ -27,7 +27,7 @@ ENV_VAR = "OPENAI_API_KEY"
 
 # https://platform.openai.com/docs/models
 # https://platform.openai.com/docs/pricing
-PRICING_RATE = {
+MODELS_DATA = {
     "gpt-4o": {"input_cost": 2.5, "output_cost": 10, "context_window": 128000},
     "chatgpt-4o-latest": {
         "input_cost": 2.5,
@@ -127,12 +127,13 @@ def add_markdown_system_message() -> None:
 def calculate_expense(
     input_tokens: int,
     output_tokens: int,
-    input_cost: float,
-    output_cost: float,
+    model: str
 ) -> float:
     """
-    Calculate the expense, given the number of tokens and the pricing rates
+    Calculate the expense, given the number of tokens and the model pricing rates
     """
+    input_cost = MODELS_DATA[model]["input_cost"],
+    output_cost = MODELS_DATA[model]["output_cost"],
     expense = ((input_tokens / 10**6) * input_cost) + (
         (output_tokens / 10**6) * output_cost
     )
@@ -143,18 +144,18 @@ def calculate_expense(
     return expense
 
 
-def display_expense(model: str) -> None:
+def display_expense(prompt_tokens: int, completion_tokens: int, model: str) -> None:
     """
     Given the model used, display total tokens used and estimated expense
     """
+    if model not in MODELS_DATA:
+        console.print(f"[red]Model {model} not found in data.")
+        return
+
     total_expense = calculate_expense(
         prompt_tokens,
         completion_tokens,
-        PRICING_RATE[model]["input_cost"],
-        PRICING_RATE[model]["output_cost"],
-    )
-    console.print(
-        f"\nTotal tokens used: [green bold]{prompt_tokens + completion_tokens}"
+        model
     )
     console.print(f"Estimated expense: [green bold]${total_expense}")
 
